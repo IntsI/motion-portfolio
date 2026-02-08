@@ -144,10 +144,15 @@ body {
   .container {
     grid-template-columns: 1fr;
     row-gap: 1.25rem;
+    padding: 0 16px;
   }
 
   .col.empty {
     display: none;
+  }
+
+  .theme-toggle {
+    right: 16px;
   }
 }
 
