@@ -9,6 +9,11 @@
   <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 </head>
 <body>
+  <!-- Dark Mode Toggle -->
+  <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+    <span class="toggle-thumb"></span>
+  </button>
+
   <section id="hero">
     <div class="container">
       <div class="col">
@@ -20,11 +25,6 @@
         </lottie-player>
       </div>
       <div class="col empty"></div>
-      <div class="col empty"></div>
-      <div class="col empty"></div>
-      <div class="col col-2">
-        <h1 class="hero-title">MOTION & INTERACTION DESIGNER</h1>
-      </div>
       <div class="col empty"></div>
       <div class="col empty"></div>
       <div class="col">
@@ -281,32 +281,55 @@
   </section>
   <!-- Video Overlay -->
   <div class="video-overlay" id="video-overlay">
-    <button class="close-btn" id="close-overlay">
-      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-        <line x1="18" y1="6" x2="6" y2="18"></line>
-        <line x1="6" y1="6" x2="18" y2="18"></line>
-      </svg>
-    </button>
-    <video id="overlay-video" controls playsinline></video>
+    <div class="video-overlay-content">
+      <video id="overlay-video" controls playsinline></video>
+      <button class="close-btn" id="close-overlay">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
   </div>
 
   <script>
-    // Time-based greeting Lottie
-    window.addEventListener('DOMContentLoaded', function() {
-      const hour = new Date().getHours();
-      let greetingFile = 'assets/welcome_here.json';
-
-      if (hour >= 5 && hour < 12) {
-        greetingFile = 'assets/good_morning.json';
-      } else if (hour >= 12 && hour < 18) {
-        greetingFile = 'assets/good_afternoon.json';
-      } else {
-        greetingFile = 'assets/good_evening.json';
+    // Time-based greeting Lottie with theme support
+    function getTimeOfDay() {
+      // Allow URL override for testing: ?time=morning, ?time=afternoon, ?time=evening
+      const params = new URLSearchParams(window.location.search);
+      const override = params.get('time');
+      if (override && ['morning', 'afternoon', 'evening'].includes(override)) {
+        return override;
       }
 
+      const hour = new Date().getHours();
+      if (hour >= 5 && hour < 12) return 'morning';
+      if (hour >= 12 && hour < 18) return 'afternoon';
+      return 'evening';
+    }
+
+    function updateGreeting() {
+      const timeOfDay = getTimeOfDay();
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const theme = isDark ? 'dark' : 'light';
+
       const player = document.getElementById('greeting-lottie');
-      player.load(greetingFile);
-    });
+      const lottieFile = `assets/good_${timeOfDay}_${theme}.json`;
+      player.load(lottieFile);
+    }
+
+    window.addEventListener('DOMContentLoaded', updateGreeting);
+
+    // Console helper: testTime('morning'), testTime('afternoon'), testTime('evening'), testTime('fallback')
+    window.testTime = function(time) {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const theme = isDark ? 'dark' : 'light';
+      const file = time === 'fallback'
+        ? `assets/welcome_here_${theme}.json`
+        : `assets/good_${time}_${theme}.json`;
+      document.getElementById('greeting-lottie').load(file);
+      console.log(`Loaded: ${file}`);
+    };
 
     const overlay = document.getElementById('video-overlay');
     const overlayVideo = document.getElementById('overlay-video');
@@ -344,6 +367,35 @@
         closeOverlay();
       }
     });
+
+    // Dark Mode Toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const html = document.documentElement;
+
+    // Check for saved preference or system preference
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      html.setAttribute('data-theme', 'dark');
+    }
+    // Update greeting after theme is applied
+    updateGreeting();
+
+    themeToggle.addEventListener('click', function() {
+      const currentTheme = html.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+      if (newTheme === 'light') {
+        html.removeAttribute('data-theme');
+      } else {
+        html.setAttribute('data-theme', 'dark');
+      }
+
+      localStorage.setItem('theme', newTheme);
+
+      // Update greeting sun/moon SVG
+      updateGreeting();
+    });
+
   </script>
 </body>
 </html>
