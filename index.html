@@ -11,13 +11,18 @@
 <body>
   <section id="hero">
     <div class="container">
-      <div class="col col-2">
+      <div class="col">
         <lottie-player
           id="greeting-lottie"
           background="transparent"
           speed="1"
           autoplay>
         </lottie-player>
+      </div>
+      <div class="col empty"></div>
+      <div class="col empty"></div>
+      <div class="col empty"></div>
+      <div class="col col-2">
         <h1 class="hero-title">MOTION & INTERACTION DESIGNER</h1>
       </div>
       <div class="col empty"></div>
@@ -287,7 +292,7 @@
 
   <script>
     // Time-based greeting Lottie
-    (function() {
+    window.addEventListener('DOMContentLoaded', function() {
       const hour = new Date().getHours();
       let greetingFile = 'assets/welcome_here.json';
 
@@ -299,8 +304,9 @@
         greetingFile = 'assets/good_evening.json';
       }
 
-      document.getElementById('greeting-lottie').setAttribute('src', greetingFile);
-    })();
+      const player = document.getElementById('greeting-lottie');
+      player.load(greetingFile);
+    });
 
     const overlay = document.getElementById('video-overlay');
     const overlayVideo = document.getElementById('overlay-video');
