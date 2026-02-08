@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Lottie - Let Go of Struggle</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'PP Neue Montreal', -apple-system, sans-serif;
+      background: #0a0a0a;
+      color: #fcf8ea;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 300;
+      margin-bottom: 2rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    #lottie-container {
+      width: 100%;
+      max-width: 500px;
+      aspect-ratio: 1;
+      background: #111;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    #water-btn {
+      margin-top: 2rem;
+      padding: 1rem 3rem;
+      font-size: 1.1rem;
+      font-family: inherit;
+      font-weight: 400;
+      background: transparent;
+      color: #fcf8ea;
+      border: 1px solid #fcf8ea;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    #water-btn:hover {
+      background: #fcf8ea;
+      color: #0a0a0a;
+    }
+
+    #water-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    #water-btn.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #status {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: rgba(252, 248, 234, 0.5);
+    }
+
+    #reset-btn {
+      margin-top: 1rem;
+      padding: 0.5rem 1.5rem;
+      font-size: 0.9rem;
+      font-family: inherit;
+      background: transparent;
+      color: rgba(252, 248, 234, 0.5);
+      border: 1px solid rgba(252, 248, 234, 0.3);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    #reset-btn:hover {
+      color: #fcf8ea;
+      border-color: #fcf8ea;
+    }
+  </style>
+</head>
+<body>
+  <h1>Let Go of Struggle</h1>
+
+  <div id="lottie-container"></div>
+
+  <button id="water-btn">Water the mind</button>
+
+  <p id="status">Spinner is rotating...</p>
+
+  <button id="reset-btn">Reset</button>
+
+  <script>
+    const container = document.getElementById('lottie-container');
+    const waterBtn = document.getElementById('water-btn');
+    const resetBtn = document.getElementById('reset-btn');
+    const status = document.getElementById('status');
+
+    // Frame segments
+    const INTRO_END = 92;
+    const LOOP_START = 92;
+    const LOOP_END = 133;
+    const TOTAL_FRAMES = 433;
+
+    let anim;
+    let phase = 'intro'; // 'intro', 'looping', 'watering', 'done'
+
+    function initAnimation() {
+      if (anim) {
+        anim.destroy();
+      }
+
+      phase = 'intro';
+      waterBtn.classList.remove('hidden');
+      waterBtn.disabled = true;
+      status.textContent = 'Spinner is growing...';
+
+      anim = lottie.loadAnimation({
+        container: container,
+        renderer: 'svg',
+        loop: true,
+        autoplay: false,
+        path: 'assets/lottie-interactive-fixed.json'
+      });
+
+      anim.addEventListener('DOMLoaded', function() {
+        // 30% slower
+        anim.setSpeed(0.7);
+        // Play intro first
+        anim.loop = false;
+        anim.playSegments([0, LOOP_START], true);
+      });
+
+      anim.addEventListener('complete', function() {
+        if (phase === 'intro') {
+          // Switch to looping phase
+          phase = 'looping';
+          waterBtn.disabled = false;
+          status.textContent = 'Click to water the mind';
+
+          // Start seamless loop
+          anim.loop = true;
+          anim.playSegments([LOOP_START, LOOP_END], true);
+        } else if (phase === 'watering') {
+          phase = 'done';
+          status.textContent = 'Flowers have bloomed!';
+          waterBtn.classList.add('hidden');
+        }
+      });
+    }
+
+    waterBtn.addEventListener('click', function() {
+      if (phase === 'looping') {
+        phase = 'watering';
+        waterBtn.disabled = true;
+        status.textContent = 'Watering...';
+
+        // Stop loop and play watering to end
+        anim.loop = false;
+        anim.playSegments([LOOP_END, TOTAL_FRAMES], true);
+      }
+    });
+
+    resetBtn.addEventListener('click', function() {
+      initAnimation();
+    });
+
+    // Start
+    initAnimation();
+  </script>
+</body>
+</html>
