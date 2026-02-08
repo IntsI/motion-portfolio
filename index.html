@@ -12,6 +12,12 @@
   <section id="hero">
     <div class="container">
       <div class="col col-2">
+        <lottie-player
+          id="greeting-lottie"
+          background="transparent"
+          speed="1"
+          autoplay>
+        </lottie-player>
         <h1 class="hero-title">MOTION & INTERACTION DESIGNER</h1>
       </div>
       <div class="col empty"></div>
@@ -280,6 +286,22 @@
   </div>
 
   <script>
+    // Time-based greeting Lottie
+    (function() {
+      const hour = new Date().getHours();
+      let greetingFile = 'assets/welcome_here.json';
+
+      if (hour >= 5 && hour < 12) {
+        greetingFile = 'assets/good_morning.json';
+      } else if (hour >= 12 && hour < 18) {
+        greetingFile = 'assets/good_afternoon.json';
+      } else {
+        greetingFile = 'assets/good_evening.json';
+      }
+
+      document.getElementById('greeting-lottie').setAttribute('src', greetingFile);
+    })();
+
     const overlay = document.getElementById('video-overlay');
     const overlayVideo = document.getElementById('overlay-video');
     const closeBtn = document.getElementById('close-overlay');

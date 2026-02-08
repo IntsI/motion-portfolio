@@ -170,6 +170,12 @@ body {
   padding-bottom: 40px;
 }
 
+#greeting-lottie {
+  width: 100%;
+  max-width: 300px;
+  margin-bottom: 1rem;
+}
+
 .hero-title {
   font-size: 30px;
   font-weight: 500;
